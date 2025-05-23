@@ -11,13 +11,18 @@
         <div class="canvas-container"
              @dragover.prevent
              @drop="handleDrop">
-          <template v-for="(component, index) in state.canvasComponents" :key="index">
+          <template v-if="state.canvasComponents.length === 0">
+            <div class="empty-tip">
+              拖拽模板到此处开始编辑
+            </div>
+          </template>
+          <template v-else>
             <div class="canvas-component-wrapper"
-                 :class="{ active: state.selectedIndex === index }"
-                 @click="handleSelectComponent(index)">
+                 :class="{ active: state.selectedIndex === 0 }"
+                 @click="handleSelectComponent(0)">
               <component 
-                :is="component.type"
-                v-bind="component.props" 
+                :is="state.canvasComponents[0].type"
+                v-bind="state.canvasComponents[0].props" 
               />
             </div>
           </template>
@@ -37,6 +42,7 @@
 
 <script setup>
 import { reactive, computed } from 'vue'
+import { Modal } from 'ant-design-vue'
 import ComponentList from '../components/ComponentList.vue'
 import PropertyPanel from '../components/PropertyPanel.vue'
 import { componentList } from '../config/componentConfig'
@@ -58,15 +64,33 @@ const handleDragStart = (e, component) => {
 }
 
 // 处理拖拽放置
-const handleDrop = (e) => {
+const handleDrop = async (e) => {
   const componentType = e.dataTransfer.getData('componentType')
   const component = componentList.find(c => c.type === componentType)
   
   if (component) {
-    state.canvasComponents.push({
+    if (state.canvasComponents.length > 0) {
+      // 使用 ant-design-vue 的模态框进行确认
+      const result = await new Promise(resolve => {
+        Modal.confirm({
+          title: '替换确认',
+          content: '拖入新模板将会替换当前页面内容，是否继续？',
+          okText: '确认',
+          cancelText: '取消',
+          onOk: () => resolve(true),
+          onCancel: () => resolve(false)
+        })
+      })
+      
+      if (!result) return
+    }
+    
+    // 清空现有组件，添加新模板
+    state.canvasComponents = [{
       type: component.type,
       props: { ...component.defaultProps }
-    })
+    }]
+    state.selectedIndex = 0
   }
 }
 
@@ -127,5 +151,16 @@ const handleComponentUpdate = (updatedComponent) => {
 
 .canvas-component-wrapper:hover::before {
   background: rgba(24, 144, 255, 0.04);
+}
+
+.empty-tip {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 16px;
+  border: 2px dashed #eee;
+  border-radius: 4px;
 }
 </style>

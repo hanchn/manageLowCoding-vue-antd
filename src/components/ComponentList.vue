@@ -32,7 +32,7 @@
 
 <script setup>
 import { templateList } from '../config/templateConfig'
-
+import { defineEmits } from 'vue'
 const emit = defineEmits(['dragstart'])
 
 const handleDragStart = (e, template) => {

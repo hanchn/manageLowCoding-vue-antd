@@ -2,8 +2,7 @@ import {
   TableOutlined,
   DashboardOutlined,
   FormOutlined,
-  SettingOutlined,
-  UserOutlined
+  ProfileOutlined
 } from '@ant-design/icons-vue'
 
 // 模板列表配置

@@ -1,6 +1,6 @@
 <template>
   <div class="form-template">
-    <!-- 面包屑 -->
+    <!-- 面包屑导航 -->
     <div class="breadcrumb-container">
       <a-breadcrumb>
         <a-breadcrumb-item v-for="(item, index) in config.breadcrumb" :key="index">
@@ -9,123 +9,182 @@
       </a-breadcrumb>
     </div>
 
-    <!-- 表单区域 -->
-    <div class="form-container">
-      <a-card :title="config.title">
-        <a-form
-          :model="formData"
-          :label-col="{ span: 4 }"
-          :wrapper-col="{ span: 20 }"
-        >
-          <template v-for="field in config.fields" :key="field.key">
-            <a-form-item :label="field.label" :required="field.required">
-              <!-- 输入框 -->
-              <a-input
-                v-if="field.type === 'input'"
-                v-model:value="formData[field.key]"
-                :placeholder="field.placeholder"
-              />
-              <!-- 文本域 -->
-              <a-textarea
-                v-else-if="field.type === 'textarea'"
-                v-model:value="formData[field.key]"
-                :placeholder="field.placeholder"
-                :rows="field.rows || 4"
-              />
-              <!-- 选择器 -->
-              <a-select
-                v-else-if="field.type === 'select'"
-                v-model:value="formData[field.key]"
-                :placeholder="field.placeholder"
-                :options="field.options"
-              />
-              <!-- 日期选择器 -->
-              <a-date-picker
-                v-else-if="field.type === 'date'"
-                v-model:value="formData[field.key]"
-                :placeholder="field.placeholder"
-              />
-              <!-- 上传组件 -->
-              <a-upload
-                v-else-if="field.type === 'upload'"
-                :file-list="formData[field.key]"
-                @change="handleUploadChange"
-              >
-                <a-button>
-                  <upload-outlined />
-                  {{ field.placeholder || '点击上传' }}
-                </a-button>
-              </a-upload>
-            </a-form-item>
-          </template>
+    <!-- 表单标题 -->
+    <div class="form-header">
+      <h2>{{ config.formTitle }}</h2>
+    </div>
 
-          <!-- 操作按钮 -->
-          <a-form-item :wrapper-col="{ offset: 4, span: 20 }">
-            <a-space>
-              <a-button type="primary" @click="handleSubmit">
-                {{ config.submitText || '提交' }}
-              </a-button>
-              <a-button @click="handleReset">
-                {{ config.resetText || '重置' }}
-              </a-button>
-            </a-space>
+    <!-- 表单内容 -->
+    <div class="form-container">
+      <a-form 
+        :model="formData" 
+        layout="vertical"
+        class="form-content"
+      >
+        <template v-for="item in config.formItems" :key="item.key">
+          <a-form-item 
+            :label="item.label"
+            :name="item.key"
+            :rules="item.rules"
+          >
+            <!-- 输入框 -->
+            <a-input 
+              v-if="item.type === 'input'"
+              v-model:value="formData[item.key]"
+              :placeholder="item.placeholder"
+              allow-clear
+            />
+            
+            <!-- 文本域 -->
+            <a-textarea
+              v-else-if="item.type === 'textarea'"
+              v-model:value="formData[item.key]"
+              :placeholder="item.placeholder"
+              :rows="4"
+              allow-clear
+            />
+            
+            <!-- 选择器 -->
+            <a-select
+              v-else-if="item.type === 'select'"
+              v-model:value="formData[item.key]"
+              :placeholder="item.placeholder"
+              :options="item.options"
+              allow-clear
+              style="width: 100%"
+            />
+            
+            <!-- 日期选择器 -->
+            <a-date-picker
+              v-else-if="item.type === 'date'"
+              v-model:value="formData[item.key]"
+              :placeholder="item.placeholder"
+              style="width: 100%"
+            />
+            
+            <!-- 单选框组 -->
+            <a-radio-group
+              v-else-if="item.type === 'radio'"
+              v-model:value="formData[item.key]"
+            >
+              <a-radio 
+                v-for="option in item.options" 
+                :key="option.value" 
+                :value="option.value"
+              >
+                {{ option.label }}
+              </a-radio>
+            </a-radio-group>
+            
+            <!-- 复选框组 -->
+            <a-checkbox-group
+              v-else-if="item.type === 'checkbox'"
+              v-model:value="formData[item.key]"
+              :options="item.options"
+            />
           </a-form-item>
-        </a-form>
-      </a-card>
+        </template>
+        
+        <!-- 表单按钮 -->
+        <div class="form-buttons">
+          <a-space>
+            <template v-for="button in config.buttons" :key="button.key">
+              <a-button 
+                :type="button.type" 
+                @click="handleButtonClick(button.key)"
+              >
+                {{ button.text }}
+              </a-button>
+            </template>
+          </a-space>
+        </div>
+      </a-form>
     </div>
   </div>
 </template>
 
 <script setup>
-import { reactive } from 'vue'
-import { UploadOutlined } from '@ant-design/icons-vue'
+import { reactive, defineProps } from 'vue'
 
+// 定义props
 const props = defineProps({
   config: {
     type: Object,
+    required: true,
     default: () => ({
+      // 面包屑配置
       breadcrumb: ['首页', '表单页面'],
-      title: '基础表单',
-      submitText: '提交',
-      resetText: '重置',
-      fields: [
-        { key: 'name', label: '姓名', type: 'input', placeholder: '请输入姓名', required: true },
-        { key: 'email', label: '邮箱', type: 'input', placeholder: '请输入邮箱', required: true },
-        { key: 'phone', label: '手机号', type: 'input', placeholder: '请输入手机号' },
-        { key: 'description', label: '描述', type: 'textarea', placeholder: '请输入描述', rows: 4 }
+      // 表单标题
+      formTitle: '基础表单',
+      // 表单项配置
+      formItems: [
+        { 
+          key: 'name',
+          label: '名称',
+          type: 'input',
+          placeholder: '请输入名称',
+          rules: [{ required: true, message: '请输入名称' }]
+        }
+      ],
+      // 按钮配置
+      buttons: [
+        { key: 'submit', type: 'primary', text: '提交' },
+        { key: 'cancel', type: 'default', text: '取消' }
       ]
     })
   }
 })
 
+// 表单数据
 const formData = reactive({})
 
-const handleSubmit = () => {
-  console.log('提交表单:', formData)
-}
-
-const handleReset = () => {
-  Object.keys(formData).forEach(key => {
-    formData[key] = undefined
-  })
-}
-
-const handleUploadChange = (info) => {
-  console.log('文件上传:', info)
+// 按钮点击处理
+const handleButtonClick = (key) => {
+  console.log('按钮点击:', key, formData)
+  
+  if (key === 'submit') {
+    // 提交表单逻辑
+    console.log('提交表单数据:', formData)
+  } else if (key === 'cancel') {
+    // 取消操作
+    console.log('取消操作')
+  }
 }
 </script>
 
 <style scoped>
 .form-template {
   padding: 24px;
-  background: #f0f2f5;
+  background: #fff;
 }
 
 .breadcrumb-container {
+  margin-bottom: 16px;
+}
+
+.form-header {
   margin-bottom: 24px;
+}
+
+.form-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
 }
 
 .form-container {
   max-width: 800px;
+}
+
+.form-content {
+  padding: 24px;
+  background: #fafafa;
+  border-radius: 2px;
+}
+
+.form-buttons {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
 }
 </style>

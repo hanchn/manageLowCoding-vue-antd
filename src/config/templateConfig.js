@@ -6,21 +6,22 @@ import {
   UserOutlined
 } from '@ant-design/icons-vue'
 
+// 模板列表配置
 export const templateList = [
   {
     type: 'TableListTemplate',
-    label: '表格列表模板',
+    label: '表格列表页',
     icon: TableOutlined,
-    description: '包含搜索、表格、分页的标准列表页面',
+    description: '用于展示数据列表，支持搜索、筛选、分页等功能',
     defaultProps: {
       config: {
-        breadcrumb: ['系统管理', '用户列表'],
+        breadcrumb: ['首页', '列表页面'],
         searchFields: [
-          {
-            key: 'username',
-            label: '用户名',
+          { 
+            key: 'keyword',
+            label: '关键词',
             type: 'input',
-            placeholder: '请输入用户名'
+            placeholder: '请输入关键词'
           },
           {
             key: 'status',
@@ -31,91 +32,126 @@ export const templateList = [
               { label: '启用', value: 1 },
               { label: '禁用', value: 0 }
             ]
-          },
-          {
-            key: 'createTime',
-            label: '创建时间',
-            type: 'date',
-            placeholder: '请选择日期'
           }
         ],
         toolbarButtons: [
-          { key: 'add', type: 'primary', text: '新增用户' },
-          { key: 'export', type: 'default', text: '导出数据' },
-          { key: 'import', type: 'default', text: '导入数据' }
+          { key: 'add', type: 'primary', text: '新增' },
+          { key: 'export', type: 'default', text: '导出' }
         ],
         columns: [
-          { title: '用户名', dataIndex: 'username', key: 'username' },
-          { title: '邮箱', dataIndex: 'email', key: 'email' },
-          { title: '手机号', dataIndex: 'phone', key: 'phone' },
+          { title: 'ID', dataIndex: 'id', key: 'id', width: 80 },
+          { title: '名称', dataIndex: 'name', key: 'name' },
           { title: '状态', dataIndex: 'status', key: 'status' },
           { title: '创建时间', dataIndex: 'createTime', key: 'createTime' },
-          { title: '操作', key: 'action', fixed: 'right', width: 150 }
+          { title: '操作', key: 'action', fixed: 'right', width: 120 }
         ],
         rowActions: [
           { key: 'edit', text: '编辑' },
-          { key: 'delete', text: '删除' },
-          { key: 'detail', text: '详情' }
+          { key: 'delete', text: '删除' }
+        ]
+      }
+    }
+  },
+  {
+    type: 'FormTemplate',
+    label: '表单页面',
+    icon: FormOutlined,
+    description: '用于数据录入，支持各种表单项，可用于创建或编辑数据',
+    defaultProps: {
+      config: {
+        breadcrumb: ['首页', '表单页面'],
+        formTitle: '基础表单',
+        formItems: [
+          { 
+            key: 'name',
+            label: '名称',
+            type: 'input',
+            placeholder: '请输入名称',
+            rules: [{ required: true, message: '请输入名称' }]
+          },
+          {
+            key: 'type',
+            label: '类型',
+            type: 'select',
+            placeholder: '请选择类型',
+            options: [
+              { label: '类型一', value: 1 },
+              { label: '类型二', value: 2 }
+            ],
+            rules: [{ required: true, message: '请选择类型' }]
+          },
+          {
+            key: 'description',
+            label: '描述',
+            type: 'textarea',
+            placeholder: '请输入描述'
+          }
+        ],
+        buttons: [
+          { key: 'submit', type: 'primary', text: '提交' },
+          { key: 'cancel', type: 'default', text: '取消' }
         ]
       }
     }
   },
   {
     type: 'DashboardTemplate',
-    label: '数据看板模板',
+    label: '仪表盘页面',
     icon: DashboardOutlined,
-    description: '包含统计卡片、图表、数据表格的仪表板页面',
+    description: '数据概览页面，包含统计数据、图表等可视化内容',
     defaultProps: {
       config: {
-        breadcrumb: ['首页', '数据看板'],
+        breadcrumb: ['首页', '仪表盘'],
         stats: [
-          { key: 'users', title: '总用户数', value: 1128, color: '#3f8600' },
-          { key: 'orders', title: '订单数', value: 893, color: '#cf1322' },
-          { key: 'revenue', title: '收入', value: 112893, precision: 2, color: '#3f8600' },
-          { key: 'conversion', title: '转化率', value: 85.2, color: '#3f8600' }
+          { key: 'users', title: '用户总数', value: 1280, color: '#1890ff' },
+          { key: 'orders', title: '订单总数', value: 5680, color: '#52c41a' },
+          { key: 'sales', title: '销售额', value: 12800, color: '#faad14' },
+          { key: 'visits', title: '访问量', value: 8560, color: '#722ed1' }
         ],
-        leftChart: { title: '访问趋势', type: '折线图' },
-        rightChart: { title: '用户分布', type: '饼图' },
-        table: {
-          title: '最新订单',
-          columns: [
-            { title: '订单号', dataIndex: 'orderNo', key: 'orderNo' },
-            { title: '用户', dataIndex: 'user', key: 'user' },
-            { title: '金额', dataIndex: 'amount', key: 'amount' },
-            { title: '状态', dataIndex: 'status', key: 'status' }
-          ]
-        }
+        charts: [
+          { 
+            key: 'trend', 
+            title: '趋势图', 
+            type: 'line',
+            data: [
+              { month: '1月', value: 320 },
+              { month: '2月', value: 450 },
+              { month: '3月', value: 520 },
+              { month: '4月', value: 390 },
+              { month: '5月', value: 680 },
+              { month: '6月', value: 720 }
+            ]
+          }
+        ]
       }
     }
   },
   {
-    type: 'FormTemplate',
-    label: '表单页面模板',
-    icon: FormOutlined,
-    description: '包含各种表单控件的标准表单页面',
+    type: 'DetailTemplate',
+    label: '详情页面',
+    icon: ProfileOutlined,
+    description: '用于展示详细信息，支持多种布局和内容展示方式',
     defaultProps: {
       config: {
-        breadcrumb: ['系统管理', '新增用户'],
-        title: '用户信息表单',
-        submitText: '保存',
-        resetText: '重置',
-        fields: [
-          { key: 'username', label: '用户名', type: 'input', placeholder: '请输入用户名', required: true },
-          { key: 'email', label: '邮箱', type: 'input', placeholder: '请输入邮箱', required: true },
-          { key: 'phone', label: '手机号', type: 'input', placeholder: '请输入手机号' },
-          { 
-            key: 'role', 
-            label: '角色', 
-            type: 'select', 
-            placeholder: '请选择角色',
-            options: [
-              { label: '管理员', value: 'admin' },
-              { label: '普通用户', value: 'user' }
+        breadcrumb: ['首页', '详情页面'],
+        title: '基础详情页',
+        sections: [
+          {
+            title: '基本信息',
+            items: [
+              { label: '名称', value: '示例名称' },
+              { label: '编号', value: 'NO.12345' },
+              { label: '状态', value: '正常', tag: { color: 'green' } },
+              { label: '创建时间', value: '2023-01-01 12:00:00' }
             ]
           },
-          { key: 'birthday', label: '生日', type: 'date', placeholder: '请选择生日' },
-          { key: 'avatar', label: '头像', type: 'upload', placeholder: '点击上传头像' },
-          { key: 'description', label: '个人简介', type: 'textarea', placeholder: '请输入个人简介', rows: 4 }
+          {
+            title: '详细信息',
+            items: [
+              { label: '描述', value: '这是一段详细描述文本，可以很长...' },
+              { label: '备注', value: '备注信息' }
+            ]
+          }
         ]
       }
     }

@@ -36,7 +36,7 @@
           </div>
         </a-collapse-panel>
 
-        <!-- 搜索字段配置 (仅表格模板) -->
+        <!-- 搜索字段配置 (表格模板) -->
         <a-collapse-panel 
           v-if="component.type === 'TableListTemplate'" 
           key="searchFields" 
@@ -66,7 +66,7 @@
                     <a-input v-model:value="field.placeholder" @change="handleConfigChange" />
                   </a-form-item>
                   <a-form-item v-if="field.type === 'select'" label="选项配置">
-                    <div v-for="(option, optIndex) in field.options" :key="optIndex" class="option-item">
+                    <div v-for="(option, optIndex) in field.options || []" :key="optIndex" class="option-item">
                       <a-input 
                         v-model:value="option.label" 
                         placeholder="选项文本"
@@ -78,7 +78,18 @@
                         placeholder="选项值"
                         @change="handleConfigChange"
                       />
+                      <a-button 
+                        type="text" 
+                        danger 
+                        size="small"
+                        @click="removeOption(field, optIndex)"
+                      >
+                        删除
+                      </a-button>
                     </div>
+                    <a-button type="dashed" block @click="addOption(field)">
+                      + 添加选项
+                    </a-button>
                   </a-form-item>
                 </a-form>
               </a-card>
@@ -89,7 +100,7 @@
           </div>
         </a-collapse-panel>
 
-        <!-- 表格列配置 (仅表格模板) -->
+        <!-- 表格列配置 (表格模板) -->
         <a-collapse-panel 
           v-if="component.type === 'TableListTemplate'" 
           key="tableColumns" 
@@ -99,7 +110,13 @@
             <div v-for="(column, index) in localConfig.columns" :key="index" class="column-item">
               <a-card size="small" :title="`列 ${index + 1}`">
                 <template #extra>
-                  <a-button type="text" danger size="small" @click="removeColumn(index)">
+                  <a-button 
+                    v-if="column.key !== 'action'" 
+                    type="text" 
+                    danger 
+                    size="small" 
+                    @click="removeColumn(index)"
+                  >
                     删除
                   </a-button>
                 </template>
@@ -108,7 +125,7 @@
                   <a-form-item label="列标题">
                     <a-input v-model:value="column.title" @change="handleConfigChange" />
                   </a-form-item>
-                  <a-form-item label="数据字段">
+                  <a-form-item v-if="column.key !== 'action'" label="数据字段">
                     <a-input v-model:value="column.dataIndex" @change="handleConfigChange" />
                   </a-form-item>
                   <a-form-item label="列宽度">
@@ -123,7 +140,7 @@
           </div>
         </a-collapse-panel>
 
-        <!-- 统计卡片配置 (仅仪表板模板) -->
+        <!-- 表单项配置 (表单模板) -->
         <a-collapse-panel 
           v-if="component.type === 'DashboardTemplate'" 
           key="stats" 
